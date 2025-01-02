@@ -10,7 +10,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
-          'Home Screen',
+          'Home screen',
           style: TextStyle(color: Colors.white),
         ),
       ),
