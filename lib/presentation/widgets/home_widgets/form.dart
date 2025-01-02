@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:webspark_test/data/data_providers/fields_api.dart';
+import 'package:webspark_test/data/repositories/fields_repository.dart';
 import 'package:webspark_test/presentation/screens/process.dart';
 
 class UrlForm extends StatefulWidget {
@@ -15,6 +16,7 @@ class _UrlFormState extends State<UrlForm> {
   final _formKey = GlobalKey<FormState>();
   String url = '';
   bool isFetching = false;
+  final fieldsRepository = FieldsRepository(const FieldsApi());
 
   @override
   Widget build(BuildContext context) {
@@ -62,33 +64,21 @@ class _UrlFormState extends State<UrlForm> {
                     setState(() {
                       isFetching = true;
                     });
-                    final response = await http.get(Uri.parse(url));
+
+                    final fields = await fieldsRepository.fetchData(url);
 
                     if (!context.mounted) {
                       return;
                     }
-
-                    if (response.statusCode == 200) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const ProcessScreen(),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              'Oops, ${response.statusCode} error happened'),
-                        ),
-                      );
-                    }
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ProcessScreen(),
+                      ),
+                    );
                   } catch (e) {
                     ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Oops, unexpected error'),
-                      ),
+                      SnackBar(content: Text(e.toString())),
                     );
                   } finally {
                     setState(() {
