@@ -72,7 +72,7 @@ class _UrlFormState extends State<UrlForm> {
                     }
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const ProcessScreen(),
+                        builder: (context) => ProcessScreen(fields: fields),
                       ),
                     );
                   } catch (e) {

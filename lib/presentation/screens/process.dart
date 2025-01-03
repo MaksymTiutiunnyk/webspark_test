@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:webspark_test/data/models/field.dart';
+import 'package:webspark_test/logic/shortest_path_finder.dart';
 import 'package:webspark_test/presentation/screens/result_list.dart';
 
 class ProcessScreen extends StatefulWidget {
-  const ProcessScreen({super.key});
+  final List<Field> fields;
+  const ProcessScreen({super.key, required this.fields});
 
   @override
   State<ProcessScreen> createState() => _ProcessScreenState();
@@ -14,6 +17,11 @@ class _ProcessScreenState extends State<ProcessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    for (final field in widget.fields) {
+      final shortestPathFinder = ShortestPathFinder(field);
+      print(shortestPathFinder.findShortestPath());
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
