@@ -26,10 +26,13 @@ class _UrlFormState extends State<UrlForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
+          children: [
             Row(
               children: [
-                const Icon(Icons.compare_arrows),
+                const Icon(
+                  Icons.compare_arrows,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 24),
                 Expanded(
                   child: TextFormField(
@@ -52,12 +55,6 @@ class _UrlFormState extends State<UrlForm> {
               ],
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              ),
               onPressed: isFetching
                   ? null
                   : () async {
@@ -91,11 +88,12 @@ class _UrlFormState extends State<UrlForm> {
                       }
                     },
               child: !isFetching
-                  ? const Text(
-                      'Start counting process',
-                      style: TextStyle(color: Colors.black),
-                    )
-                  : const CircularProgressIndicator(),
+                  ? const Text('Start counting process')
+                  : const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(),
+                    ),
             ),
           ],
         ),

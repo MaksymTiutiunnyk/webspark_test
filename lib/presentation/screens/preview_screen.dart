@@ -9,11 +9,12 @@ class PreviewScreen extends StatelessWidget {
   final List<Cell> result;
   final String formattedPath;
 
-  const PreviewScreen(
-      {super.key,
-      required this.field,
-      required this.result,
-      required this.formattedPath});
+  const PreviewScreen({
+    super.key,
+    required this.field,
+    required this.result,
+    required this.formattedPath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +29,10 @@ class PreviewScreen extends StatelessWidget {
                 : LargeFieldGrid(field: field, result: result),
             SizedBox(
               width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    formattedPath,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ],
+              child: Text(
+                formattedPath,
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
               ),
             ),
           ],

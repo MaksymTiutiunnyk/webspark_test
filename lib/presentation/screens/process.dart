@@ -90,7 +90,7 @@ class _ProcessScreenState extends State<ProcessScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: percentage == 100
                       ? const Text(
-                          'All calculations has finished, you can send your results to server',
+                          'All calculations have been finished, you can send your results to server',
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 18),
                         )
@@ -136,23 +136,18 @@ class _ProcessScreenState extends State<ProcessScreen> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                ),
                 onPressed: isSending
                     ? null
                     : () async {
                         await _sendResultsToServer();
                       },
                 child: !isSending
-                    ? const Text(
-                        'Send results to server',
-                        style: TextStyle(color: Colors.black),
-                      )
-                    : const CircularProgressIndicator(),
+                    ? const Text('Send results to server')
+                    : const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(),
+                      ),
               ),
             ),
         ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webspark_test/presentation/widgets/home_widgets/form.dart';
+import 'package:webspark_test/presentation/widgets/home_widgets/url_form.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
             Text(
               'Set valid API base url in order to continue',
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12),
             UrlForm(),
           ],
         ),

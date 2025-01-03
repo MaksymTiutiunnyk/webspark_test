@@ -30,7 +30,8 @@ class FieldGrid extends StatelessWidget {
             child: Text(
               '(${cell.row},${cell.column})',
               style: TextStyle(
-                  color: cell.isBlocked ? Colors.white : Colors.black),
+                color: cell.isBlocked ? Colors.white : Colors.black,
+              ),
             ),
           );
         },
