@@ -12,16 +12,29 @@ class ProcessScreen extends StatefulWidget {
 }
 
 class _ProcessScreenState extends State<ProcessScreen> {
-  int percentage = 50;
+  int percentage = 0;
   bool isSending = false;
 
   @override
-  Widget build(BuildContext context) {
-    for (final field in widget.fields) {
-      final shortestPathFinder = ShortestPathFinder(field);
-      print(shortestPathFinder.findShortestPath());
-    }
+  void initState() {
+    super.initState();
+    _startCalculations();
+  }
 
+  void _startCalculations() {
+    for (int i = 0; i < widget.fields.length; ++i) {
+      ShortestPathFinder(widget.fields[i]).findShortestPath();
+      setState(() {
+        percentage = (i / widget.fields.length * 100).toInt();
+      });
+    }
+    setState(() {
+      percentage = 100;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -103,6 +116,10 @@ class _ProcessScreenState extends State<ProcessScreen> {
                       builder: (context) => const ResultListScreen(),
                     ),
                   );
+
+                  setState(() {
+                    isSending = false;
+                  });
                 },
                 child: !isSending
                     ? const Text(
