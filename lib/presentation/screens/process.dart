@@ -25,7 +25,13 @@ class _ProcessScreenState extends State<ProcessScreen> {
 
   void _startCalculations() {
     for (int i = 0; i < widget.fields.length; ++i) {
-      results.add(ShortestPathFinder(widget.fields[i]).findShortestPath());
+      final result = ShortestPathFinder(widget.fields[i]).findShortestPath();
+
+      results.add(result
+          .map((element) => widget.fields[i].cells.firstWhere((cell) =>
+              cell.column == element['x'] && cell.row == element['y']))
+          .toList());
+
       setState(() {
         percentage = (i / widget.fields.length * 100).toInt();
       });

@@ -7,7 +7,7 @@ class ShortestPathFinder {
 
   ShortestPathFinder(this.field);
 
-  List<Cell> findShortestPath() {
+  List<Map<String, int>> findShortestPath() {
     final start = field.start;
     final end = field.end;
 
@@ -84,12 +84,13 @@ class ShortestPathFinder {
     return neighbors;
   }
 
-  List<Cell> _reconstructPath(Map<Cell, Cell?> cameFrom, Cell current) {
+  List<Map<String, int>> _reconstructPath(
+      Map<Cell, Cell?> cameFrom, Cell current) {
     List<Cell> path = [current];
     while (cameFrom[current] != null) {
       current = cameFrom[current]!;
       path.insert(0, current);
     }
-    return path;
+    return path.map((cell) => {'x': cell.column, 'y': cell.row}).toList();
   }
 }
