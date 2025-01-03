@@ -11,16 +11,18 @@ class SingleResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path =
-        result.map((cell) => '(${cell.row}.${cell.column})').join(' -> ');
+        result.map((cell) => '(${cell.row},${cell.column})').join('->');
 
     return InkWell(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => PreviewScreen(
-          field: field,
-          result: result,
-          formattedPath: path,
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PreviewScreen(
+            field: field,
+            result: result,
+            formattedPath: path,
+          ),
         ),
-      )),
+      ),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
