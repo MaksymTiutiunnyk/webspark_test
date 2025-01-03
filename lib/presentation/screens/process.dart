@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:webspark_test/data/models/cell.dart';
 import 'package:webspark_test/data/models/field.dart';
 import 'package:webspark_test/logic/shortest_path_finder.dart';
 import 'package:webspark_test/presentation/screens/result_list.dart';
@@ -14,6 +15,7 @@ class ProcessScreen extends StatefulWidget {
 class _ProcessScreenState extends State<ProcessScreen> {
   int percentage = 0;
   bool isSending = false;
+  List<List<Cell>> results = [];
 
   @override
   void initState() {
@@ -23,7 +25,7 @@ class _ProcessScreenState extends State<ProcessScreen> {
 
   void _startCalculations() {
     for (int i = 0; i < widget.fields.length; ++i) {
-      ShortestPathFinder(widget.fields[i]).findShortestPath();
+      results.add(ShortestPathFinder(widget.fields[i]).findShortestPath());
       setState(() {
         percentage = (i / widget.fields.length * 100).toInt();
       });
@@ -113,7 +115,10 @@ class _ProcessScreenState extends State<ProcessScreen> {
 
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const ResultListScreen(),
+                      builder: (context) => ResultListScreen(
+                        widget.fields,
+                        results,
+                      ),
                     ),
                   );
 
