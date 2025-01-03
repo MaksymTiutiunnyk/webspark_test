@@ -1,11 +1,15 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webspark_test/data/models/cell.dart';
 import 'package:webspark_test/data/models/field.dart';
+import 'package:webspark_test/logic/cubit/percentage_cubit.dart';
 
 class ShortestPathFinder {
   final Field field;
+  final BuildContext context;
 
-  ShortestPathFinder(this.field);
+  ShortestPathFinder(this.field, this.context);
 
   List<Map<String, int>> findShortestPath() {
     final start = field.start;
@@ -18,16 +22,23 @@ class ShortestPathFinder {
     List<Cell> openQueue = [start];
     Set<Cell> closedQueue = {};
 
+    int processedCells = 0;
+
     while (openQueue.isNotEmpty) {
       openQueue.sort((a, b) => (fScores[a] ?? double.infinity)
           .compareTo(fScores[b] ?? double.infinity));
       final current = openQueue.removeAt(0);
 
       if (current == end) {
+        context
+            .read<PercentageCubit>()
+            .updateProcessedCells(field.cells.length - processedCells);
         return _reconstructPath(cameFrom, current);
       }
 
       closedQueue.add(current);
+      ++processedCells;
+      context.read<PercentageCubit>().updateProcessedCells(1);
 
       for (final neighbor in _getNeighbors(current)) {
         if (neighbor.isBlocked || closedQueue.contains(neighbor)) continue;

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:webspark_test/logic/cubit/percentage_cubit.dart';
 import 'package:webspark_test/presentation/screens/home.dart';
 
 ColorScheme kColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
@@ -10,7 +12,14 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]).then((value) => runApp(const WebsparkTest()));
+  ]).then(
+    (value) => runApp(
+      BlocProvider(
+        create: (context) => PercentageCubit(),
+        child: const WebsparkTest(),
+      ),
+    ),
+  );
 }
 
 class WebsparkTest extends StatelessWidget {

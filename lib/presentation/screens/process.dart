@@ -1,156 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:webspark_test/data/data_providers/fields_api.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webspark_test/data/models/cell.dart';
 import 'package:webspark_test/data/models/field.dart';
-import 'package:webspark_test/data/repositories/fields_repository.dart';
+import 'package:webspark_test/logic/cubit/percentage_cubit.dart';
 import 'package:webspark_test/logic/shortest_path_finder.dart';
-import 'package:webspark_test/presentation/screens/result_list.dart';
+import 'package:webspark_test/presentation/widgets/process_widgets/label.dart';
+import 'package:webspark_test/presentation/widgets/process_widgets/percentage_circle.dart';
+import 'package:webspark_test/presentation/widgets/process_widgets/percentage_container.dart';
+import 'package:webspark_test/presentation/widgets/process_widgets/send_results_button.dart';
 
-class ProcessScreen extends StatefulWidget {
+class ProcessScreen extends StatelessWidget {
   final List<Field> fields;
-  const ProcessScreen({super.key, required this.fields});
+  final int totalCells;
+  final List<List<Cell>> _results = [];
+  ProcessScreen({super.key, required this.fields})
+      : totalCells = fields.fold(0, (sum, field) => sum + field.cells.length);
 
-  @override
-  State<ProcessScreen> createState() => _ProcessScreenState();
-}
-
-class _ProcessScreenState extends State<ProcessScreen> {
-  int percentage = 0;
-  bool isSending = false;
-  List<List<Cell>> results = [];
-  final fieldsRepository = FieldsRepository(const FieldsApi());
-
-  @override
-  void initState() {
-    super.initState();
-    _startCalculations();
-  }
-
-  void _startCalculations() {
-    for (int i = 0; i < widget.fields.length; ++i) {
-      final result = ShortestPathFinder(widget.fields[i]).findShortestPath();
-
-      results.add(result
-          .map((element) => widget.fields[i].cells.firstWhere((cell) =>
-              cell.column == element['x'] && cell.row == element['y']))
-          .toList());
-
-      setState(() {
-        percentage = (i / widget.fields.length * 100).toInt();
-      });
-    }
-    setState(() {
-      percentage = 100;
-    });
-  }
-
-  Future<void> _sendResultsToServer() async {
-    setState(() {
-      isSending = true;
-    });
-
-    try {
-      await fieldsRepository.sendResults(widget.fields, results);
+  Future<void> _startCalculations(BuildContext context) async {
+    for (int i = 0; i < fields.length; ++i) {
+      await Future.delayed(const Duration(seconds: 2));
 
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ResultListScreen(
-            widget.fields,
-            results,
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    } finally {
-      setState(() {
-        isSending = false;
-      });
+      final result = ShortestPathFinder(fields[i], context).findShortestPath();
+
+      _results.add(result
+          .map((element) => fields[i].cells.firstWhere((cell) =>
+              cell.column == element['x'] && cell.row == element['y']))
+          .toList());
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _startCalculations(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Process screen')),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: percentage == 100
-                      ? const Text(
-                          'All calculations have been finished, you can send your results to server',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 18),
-                        )
-                      : const Text(
-                          'Calculations in progress...',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 24),
-                        ),
+      body: BlocBuilder<PercentageCubit, int>(
+        builder: (context, state) {
+          int percentage = (state / totalCells * 100).toInt();
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Label(percentage),
+                    PercentageContainer(percentage),
+                    const SizedBox(height: 16),
+                    PercentageCircle(percentage),
+                  ],
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        blurRadius: 1,
-                        spreadRadius: 0.1,
-                        offset: const Offset(0, 0.6),
-                      ),
-                    ],
-                  ),
-                  width: double.infinity,
-                  child: Text(
-                    '$percentage%',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 24),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircularProgressIndicator(
-                    value: percentage / 100,
-                    strokeWidth: 4,
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (percentage == 100)
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                onPressed: isSending
-                    ? null
-                    : () async {
-                        await _sendResultsToServer();
-                      },
-                child: !isSending
-                    ? const Text('Send results to server')
-                    : const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(),
-                      ),
               ),
-            ),
-        ],
+              if (percentage == 100)
+                SendResultsButton(fields: fields, results: _results),
+            ],
+          );
+        },
       ),
     );
   }
