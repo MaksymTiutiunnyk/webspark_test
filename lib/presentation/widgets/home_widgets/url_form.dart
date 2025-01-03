@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webspark_test/data/data_providers/fields_api.dart';
 import 'package:webspark_test/data/repositories/fields_repository.dart';
 import 'package:webspark_test/logic/cubit/percentage_cubit.dart';
+import 'package:webspark_test/main.dart';
 import 'package:webspark_test/presentation/screens/process.dart';
 
 class UrlForm extends StatefulWidget {
@@ -16,9 +17,9 @@ class UrlForm extends StatefulWidget {
 
 class _UrlFormState extends State<UrlForm> {
   final _formKey = GlobalKey<FormState>();
-  String url = '';
-  bool isFetching = false;
-  final fieldsRepository = FieldsRepository(const FieldsApi());
+  final TextEditingController _urlController = TextEditingController();
+  bool _isFetching = false;
+  final _fieldsRepository = FieldsRepository(const FieldsApi());
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +39,14 @@ class _UrlFormState extends State<UrlForm> {
                 const SizedBox(width: 24),
                 Expanded(
                   child: TextFormField(
+                    controller: _urlController,
                     validator: (value) {
-                      const allowedUrl =
-                          'https://flutter.webspark.dev/flutter/api';
                       if (value == null || value.isEmpty) {
                         return 'Please enter a valid URL';
                       }
-
-                      if (value != allowedUrl) {
+                      if (value != kBaseUrl) {
                         return 'URL is not allowed';
                       }
-
-                      url = value;
                       return null;
                     },
                   ),
@@ -57,16 +54,17 @@ class _UrlFormState extends State<UrlForm> {
               ],
             ),
             ElevatedButton(
-              onPressed: isFetching
+              onPressed: _isFetching
                   ? null
                   : () async {
                       if (_formKey.currentState!.validate()) {
                         try {
                           setState(() {
-                            isFetching = true;
+                            _isFetching = true;
                           });
 
-                          final fields = await fieldsRepository.fetchData(url);
+                          final fields = await _fieldsRepository
+                              .fetchData(_urlController.text);
 
                           if (!context.mounted) {
                             return;
@@ -85,12 +83,12 @@ class _UrlFormState extends State<UrlForm> {
                           );
                         } finally {
                           setState(() {
-                            isFetching = false;
+                            _isFetching = false;
                           });
                         }
                       }
                     },
-              child: !isFetching
+              child: !_isFetching
                   ? const Text('Start counting process')
                   : const SizedBox(
                       height: 20,
@@ -102,5 +100,11 @@ class _UrlFormState extends State<UrlForm> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _urlController.dispose();
+    super.dispose();
   }
 }

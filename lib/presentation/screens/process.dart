@@ -11,14 +11,16 @@ import 'package:webspark_test/presentation/widgets/process_widgets/send_results_
 
 class ProcessScreen extends StatelessWidget {
   final List<Field> fields;
-  final int totalCells;
+  final int _totalCells;
   final List<List<Cell>> _results = [];
   ProcessScreen({super.key, required this.fields})
-      : totalCells = fields.fold(0, (sum, field) => sum + field.cells.length);
+      : _totalCells = fields.fold(0, (sum, field) => sum + field.cells.length);
 
   Future<void> _startCalculations(BuildContext context) async {
     for (int i = 0; i < fields.length; ++i) {
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(
+        const Duration(seconds: 2),
+      ); // simulate huge amounts of data retrieved from API
 
       if (!context.mounted) {
         return;
@@ -40,7 +42,7 @@ class ProcessScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Process screen')),
       body: BlocBuilder<PercentageCubit, int>(
         builder: (context, state) {
-          int percentage = (state / totalCells * 100).toInt();
+          int percentage = (state / _totalCells * 100).toInt();
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
