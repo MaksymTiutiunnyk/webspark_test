@@ -58,35 +58,38 @@ class _UrlFormState extends State<UrlForm> {
                 ),
                 backgroundColor: Theme.of(context).colorScheme.inversePrimary,
               ),
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  try {
-                    setState(() {
-                      isFetching = true;
-                    });
+              onPressed: isFetching
+                  ? null
+                  : () async {
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          setState(() {
+                            isFetching = true;
+                          });
 
-                    final fields = await fieldsRepository.fetchData(url);
+                          final fields = await fieldsRepository.fetchData(url);
 
-                    if (!context.mounted) {
-                      return;
-                    }
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProcessScreen(fields: fields),
-                      ),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).clearSnackBars();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
-                    );
-                  } finally {
-                    setState(() {
-                      isFetching = false;
-                    });
-                  }
-                }
-              },
+                          if (!context.mounted) {
+                            return;
+                          }
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProcessScreen(fields: fields),
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString())),
+                          );
+                        } finally {
+                          setState(() {
+                            isFetching = false;
+                          });
+                        }
+                      }
+                    },
               child: !isFetching
                   ? const Text(
                       'Start counting process',

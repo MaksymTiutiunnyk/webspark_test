@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:webspark_test/data/data_providers/fields_api.dart';
 import 'package:webspark_test/data/models/cell.dart';
 import 'package:webspark_test/data/models/field.dart';
+import 'package:webspark_test/data/repositories/fields_repository.dart';
 import 'package:webspark_test/logic/shortest_path_finder.dart';
 import 'package:webspark_test/presentation/screens/result_list.dart';
 
@@ -16,6 +18,7 @@ class _ProcessScreenState extends State<ProcessScreen> {
   int percentage = 0;
   bool isSending = false;
   List<List<Cell>> results = [];
+  final fieldsRepository = FieldsRepository(const FieldsApi());
 
   @override
   void initState() {
@@ -39,6 +42,37 @@ class _ProcessScreenState extends State<ProcessScreen> {
     setState(() {
       percentage = 100;
     });
+  }
+
+  Future<void> _sendResultsToServer() async {
+    setState(() {
+      isSending = true;
+    });
+
+    try {
+      await fieldsRepository.sendResults(widget.fields, results);
+
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ResultListScreen(
+            widget.fields,
+            results,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      setState(() {
+        isSending = false;
+      });
+    }
   }
 
   @override
@@ -108,24 +142,11 @@ class _ProcessScreenState extends State<ProcessScreen> {
                   ),
                   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                 ),
-                onPressed: () {
-                  setState(() {
-                    isSending = true;
-                  });
-
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ResultListScreen(
-                        widget.fields,
-                        results,
-                      ),
-                    ),
-                  );
-
-                  setState(() {
-                    isSending = false;
-                  });
-                },
+                onPressed: isSending
+                    ? null
+                    : () async {
+                        await _sendResultsToServer();
+                      },
                 child: !isSending
                     ? const Text(
                         'Send results to server',

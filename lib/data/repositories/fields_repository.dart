@@ -28,7 +28,8 @@ class FieldsRepository {
       for (int row = 0; row < cellsData.length; ++row) {
         for (int column = 0; column < cellsData[row].length; ++column) {
           bool isBlocked = cellsData[row][column] == 'X';
-          bool isStart = row == startCellData['y'] && column == startCellData['x'];
+          bool isStart =
+              row == startCellData['y'] && column == startCellData['x'];
           bool isEnd = row == endCellData['y'] && column == endCellData['x'];
 
           cells.add(
@@ -46,9 +47,38 @@ class FieldsRepository {
       final startCell = cells.firstWhere((cell) => cell.isStart);
       final endCell = cells.firstWhere((cell) => cell.isEnd);
 
-      return Field(cells: cells, start: startCell, end: endCell);
+      return Field(
+        id: fieldData['id'],
+        cells: cells,
+        start: startCell,
+        end: endCell,
+      );
     }).toList();
 
     return fields;
+  }
+
+  Future<void> sendResults(
+    List<Field> fields,
+    List<List<Cell>> results,
+  ) async {
+    List<Map<String, dynamic>> body = fields.map((field) {
+      return {
+        "id": field.id,
+        "result": {
+          "steps": results[fields.indexOf(field)].map((cell) {
+            return {"x": cell.column.toString(), "y": cell.row.toString()};
+          }).toList(),
+          "path": results[fields.indexOf(field)]
+              .map((cell) => "(${cell.column},${cell.row})")
+              .join("->"),
+        }
+      };
+    }).toList();
+
+    final response = await fieldsApi.sendResults(body);
+    if (response.statusCode != 200) {
+      throw Exception('Ooops, error ${response.statusCode}');
+    }
   }
 }
