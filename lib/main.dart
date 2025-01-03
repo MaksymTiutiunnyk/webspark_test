@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webspark_test/logic/cubit/percentage_cubit.dart';
+import 'package:webspark_test/logic/cubit/url_cubit.dart';
 import 'package:webspark_test/presentation/screens/home.dart';
 
-const kBaseUrl = "https://flutter.webspark.dev/flutter/api";
 ColorScheme kColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
 
 void main() {
@@ -15,8 +15,15 @@ void main() {
     DeviceOrientation.portraitDown,
   ]).then(
     (value) => runApp(
-      BlocProvider(
-        create: (context) => PercentageCubit(),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => PercentageCubit(),
+          ),
+          BlocProvider(
+            create: (context) => UrlCubit(),
+          ),
+        ],
         child: const WebsparkTest(),
       ),
     ),

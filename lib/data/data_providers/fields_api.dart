@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:webspark_test/main.dart';
 
 class FieldsApi {
   const FieldsApi();
@@ -10,9 +9,12 @@ class FieldsApi {
     return await http.get(Uri.parse(url));
   }
 
-  Future<Response> sendResults(List<Map<String, dynamic>> body) async {
+  Future<Response> sendResults({
+    required List<Map<String, dynamic>> body,
+    required String url,
+  }) async {
     return await http.post(
-      Uri.parse(kBaseUrl),
+      Uri.parse(url),
       headers: {"Content-Type": "application/json"},
       body: json.encode(body),
     );

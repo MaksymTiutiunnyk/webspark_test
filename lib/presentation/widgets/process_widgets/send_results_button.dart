@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webspark_test/data/data_providers/fields_api.dart';
 import 'package:webspark_test/data/models/cell.dart';
 import 'package:webspark_test/data/models/field.dart';
 import 'package:webspark_test/data/repositories/fields_repository.dart';
+import 'package:webspark_test/logic/cubit/url_cubit.dart';
 import 'package:webspark_test/presentation/screens/result_list.dart';
 
 class SendResultsButton extends StatefulWidget {
@@ -30,7 +32,11 @@ class _SendResultsButtonState extends State<SendResultsButton> {
     });
 
     try {
-      await _fieldsRepository.sendResults(widget.fields, widget.results);
+      await _fieldsRepository.sendResults(
+        fields: widget.fields,
+        results: widget.results,
+        url: context.read<UrlCubit>().state,
+      );
 
       if (!mounted) {
         return;

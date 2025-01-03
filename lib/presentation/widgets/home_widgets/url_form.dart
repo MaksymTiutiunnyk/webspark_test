@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webspark_test/data/data_providers/fields_api.dart';
 import 'package:webspark_test/data/repositories/fields_repository.dart';
 import 'package:webspark_test/logic/cubit/percentage_cubit.dart';
-import 'package:webspark_test/main.dart';
+import 'package:webspark_test/logic/cubit/url_cubit.dart';
 import 'package:webspark_test/presentation/screens/process.dart';
 
 class UrlForm extends StatefulWidget {
@@ -42,10 +42,10 @@ class _UrlFormState extends State<UrlForm> {
                     controller: _urlController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a valid URL';
+                        return 'Please, enter a URL';
                       }
-                      if (value != kBaseUrl) {
-                        return 'URL is not allowed';
+                      if (!_isValidUrl(value)) {
+                        return 'Please, enter a valid URL';
                       }
                       return null;
                     },
@@ -58,18 +58,18 @@ class _UrlFormState extends State<UrlForm> {
                   ? null
                   : () async {
                       if (_formKey.currentState!.validate()) {
-                        try {
-                          setState(() {
-                            _isFetching = true;
-                          });
+                        setState(() {
+                          _isFetching = true;
+                        });
 
+                        try {
+                          context.read<UrlCubit>().setUrl(_urlController.text);
                           final fields = await _fieldsRepository
                               .fetchData(_urlController.text);
 
-                          if (!context.mounted) {
-                            return;
-                          }
+                          if (!context.mounted) return;
                           context.read<PercentageCubit>().resetProcessedCells();
+
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
@@ -100,6 +100,11 @@ class _UrlFormState extends State<UrlForm> {
         ),
       ),
     );
+  }
+
+  bool _isValidUrl(String url) {
+    final uri = Uri.tryParse(url);
+    return uri != null && uri.hasScheme && uri.hasAuthority;
   }
 
   @override
