@@ -11,13 +11,7 @@ class ResultListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text(
-          'Result list screen',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Result list screen')),
       body: ListView.builder(
         itemBuilder: (context, index) => SingleResult(
           fields[index],
