@@ -14,7 +14,13 @@ class SingleResult extends StatelessWidget {
         result.map((cell) => '(${cell.row}.${cell.column})').join(' -> ');
 
     return InkWell(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(field: field, path: result),)),
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => PreviewScreen(
+          field: field,
+          result: result,
+          formattedPath: path,
+        ),
+      )),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
