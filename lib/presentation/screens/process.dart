@@ -36,6 +36,7 @@ class ProcessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<PercentageCubit>().resetProcessedCells();
     _startCalculations(context);
 
     return Scaffold(

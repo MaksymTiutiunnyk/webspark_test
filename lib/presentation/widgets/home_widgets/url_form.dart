@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webspark_test/data/data_providers/fields_api.dart';
 import 'package:webspark_test/data/repositories/fields_repository.dart';
-import 'package:webspark_test/logic/cubit/percentage_cubit.dart';
 import 'package:webspark_test/logic/cubit/url_cubit.dart';
 import 'package:webspark_test/presentation/screens/process.dart';
 
@@ -68,7 +67,6 @@ class _UrlFormState extends State<UrlForm> {
                               .fetchData(_urlController.text);
 
                           if (!context.mounted) return;
-                          context.read<PercentageCubit>().resetProcessedCells();
 
                           Navigator.of(context).push(
                             MaterialPageRoute(

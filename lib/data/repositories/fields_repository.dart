@@ -54,6 +54,8 @@ class FieldsRepository {
           cells: cells,
           start: startCell,
           end: endCell,
+          rows: cellsData.length,
+          columns: cellsData[0].length,
         );
       }).toList();
     } catch (e) {
